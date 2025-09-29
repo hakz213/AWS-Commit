@@ -3,8 +3,7 @@ name: Deploy to AWS (CDK)
 on:
   push:
     branches:
-      -main
-
+      - main
 
 jobs:
   deploy:
@@ -12,21 +11,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with: 
           node-version: 18
 
-      - name: Install CDK dependencies
-        working-directory: ./
+      - name: Install dependencies
         run: npm ci
 
+      # Optional: CDK bootstrap (only needed once per account/region)
+      # - name: Bootstrap CDK
+      #   run: npx cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
+
       - name: Deploy CDK stack
-        working-directory: ./
         run: npx cdk deploy --require-approval never
         env: 
-          AWS_ACCESS_KEY_ID: ${{ secrets.BETA_AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY}}
-          AWS_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.BETA_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BETA_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
